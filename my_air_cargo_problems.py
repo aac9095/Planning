@@ -126,7 +126,7 @@ class AirCargoProblem(Problem):
         kb = PropKB(fluent.pos_sentence())
         for action in self.actions_list:
             if action.check_precond(kb,action.args):
-                possible_actions.append(action.__str__())
+                possible_actions.append(action)
         return possible_actions
 
     def result(self, state: str, action: Action):
@@ -141,16 +141,28 @@ class AirCargoProblem(Problem):
         # TODO implement
         new_state = decode_state(state,self.state_map)
         kb = PropKB(new_state.sentence())
-        if action.__str__() in self.actions(state):
-            action.act(kb,action.args)
-            neg = []
-            pos = []
-            for clause in kb.clauses:
-                if clause.op == "~":
-                    neg.append(expr(clause.args[0]))
-                else:
-                    pos.append(clause)
-            new_state = FluentState(pos,neg)
+        for validAction in self.actions(state):
+            if action.name == validAction.name and action.args == validAction.args:
+                action.act(kb, action.args)
+                neg = []
+                pos = []
+                for clause in kb.clauses:
+                    if clause.op == "~":
+                        neg.append(expr(clause.args[0]))
+                    else:
+                        pos.append(clause)
+                new_state = FluentState(pos, neg)
+                break
+        # if action in self.actions(state):
+        #     action.act(kb,action.args)
+        #     neg = []
+        #     pos = []
+        #     for clause in kb.clauses:
+        #         if clause.op == "~":
+        #             neg.append(expr(clause.args[0]))
+        #         else:
+        #             pos.append(clause)
+        #     new_state = FluentState(pos,neg)
         return encode_state(new_state, self.state_map)
 
     def goal_test(self, state: str) -> bool:
@@ -192,6 +204,10 @@ class AirCargoProblem(Problem):
         """
         # TODO implement (see Russell-Norvig Ed-3 10.2.3  or Russell-Norvig Ed-2 11.2)
         count = 0
+        kb = PropKB(decode_state(node.state,self.state_map).pos_sentence())
+        for clause in self.goal:
+            if clause not in kb.clauses:
+                count = count + 1
         return count
 
 
