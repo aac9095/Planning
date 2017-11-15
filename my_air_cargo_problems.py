@@ -153,16 +153,6 @@ class AirCargoProblem(Problem):
                         pos.append(clause)
                 new_state = FluentState(pos, neg)
                 break
-        # if action in self.actions(state):
-        #     action.act(kb,action.args)
-        #     neg = []
-        #     pos = []
-        #     for clause in kb.clauses:
-        #         if clause.op == "~":
-        #             neg.append(expr(clause.args[0]))
-        #         else:
-        #             pos.append(clause)
-        #     new_state = FluentState(pos,neg)
         return encode_state(new_state, self.state_map)
 
     def goal_test(self, state: str) -> bool:
